@@ -1,24 +1,13 @@
-import java.util.Set;
 import java.util.HashMap;
-
-/**
- * Class Room - a room in an adventure game.
- *
- * This class is part of the "World of Zuul" application. 
- * "World of Zuul" is a very simple, text based adventure game.  
- *
- * A "Room" represents one location in the scenery of the game.  It is 
- * connected to other rooms via exits.  For each existing exit, the room 
- * stores a reference to the neighboring room.
- * 
- * @author  Michael Kölling and David J. Barnes
- * @version 2016.02.29
- */
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 public class Room 
 {
     private String description;
-    private HashMap<String, Room> exits;        // stores exits of this room.
+    private HashMap<String, Room> exits;
+    private HashSet items;
 
     /**
      * Create a room described "description". Initially, it has
@@ -26,50 +15,54 @@ public class Room
      * "an open court yard".
      * @param description The room's description.
      */
-    public Room(String description) 
+    public Room(String description)
     {
         this.description = description;
-        exits = new HashMap<>();
+        exits = new HashMap<String, Room>();
+        items = new HashSet();
+    }
+
+    // Retorna uma descrição longa do quarto, além das saídas que o mesmo possui
+    public String getLongDescription(){
+        return "You are " + description + ".\n" + getItemString() + "\n" + getItemWeight() + "\n" + getExitString();
+    }
+
+    //Retona a descrição dos itens presentes nos quartos
+    private String getItemString()
+    {
+        String returnDescription = "Os itens do local e seus respectivos pesos são:";
+        for(Iterator iter = items.iterator(); iter.hasNext();) {
+            returnDescription += " \n" + ((Item) iter.next()).getItemDescription();
+        }
+        return returnDescription;
+    }
+
+    //Retorna o peso dos itens presentes nos quartos
+    private String getItemWeight()
+    {
+        String returnWeight = "";
+        for(Iterator iter = items.iterator(); iter.hasNext();) {
+            returnWeight += " \n" + ((Item) iter.next()).getItemWeight();
+        }
+        return returnWeight;
     }
 
     /**
-     * Define an exit from this room.
-     * @param direction The direction of the exit.
-     * @param neighbor  The room to which the exit leads.
+     * Define the exits of this room.  Every direction either leads
+     * to another room or is null (no exit there).
      */
-    public void setExit(String direction, Room neighbor) 
+    public void setExit(String direction, Room neighboor)
     {
-        exits.put(direction, neighbor);
+        exits.put(direction, neighboor);
     }
 
-    /**
-     * @return The short description of the room
-     * (the one that was defined in the constructor).
-     */
-    public String getShortDescription()
-    {
-        return description;
+    public Room getExit(String direction){
+        return exits.get(direction);
     }
 
-    /**
-     * Return a description of the room in the form:
-     *     You are in the kitchen.
-     *     Exits: north west
-     * @return A long description of this room
-     */
-    public String getLongDescription()
+    public String getExitString()
     {
-        return "You are " + description + ".\n" + getExitString();
-    }
-
-    /**
-     * Return a string describing the room's exits, for example
-     * "Exits: north west".
-     * @return Details of the room's exits.
-     */
-    private String getExitString()
-    {
-        String returnString = "Exits:";
+        String returnString = "As saídas são:";
         Set<String> keys = exits.keySet();
         for(String exit : keys) {
             returnString += " " + exit;
@@ -77,15 +70,9 @@ public class Room
         return returnString;
     }
 
-    /**
-     * Return the room that is reached if we go from this room in direction
-     * "direction". If there is no room in that direction, return null.
-     * @param direction The exit's direction.
-     * @return The room in the given direction.
-     */
-    public Room getExit(String direction) 
+    public void addItem(Item item)
     {
-        return exits.get(direction);
+        items.add(item);
     }
-}
 
+}
