@@ -212,9 +212,6 @@ public class Game
         System.out.println("Você já comeu e está de barriga cheia!");
     }
 
-    private void back(){
-
-    }
 
     /** 
      * "Quit" was entered. Check the rest of the command to see
